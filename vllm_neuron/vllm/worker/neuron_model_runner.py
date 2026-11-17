@@ -10330,7 +10330,7 @@ class NeuronModelRunner(KVConnectorModelRunnerMixin, NeuronECConnectorModelRunne
                 return sampler_output
 
             if not self.on_device_sampling:
-                logger.info("Using vLLM Sampler")
+                # logger.info("Using vLLM Sampler")
                 sampler_output = self.sampler(
                     logits=model_output_tensor,
                     sampling_metadata=sampling_metadata,
@@ -10387,7 +10387,7 @@ class NeuronModelRunner(KVConnectorModelRunnerMixin, NeuronECConnectorModelRunne
             # creates a new tensor with separate storage from the original
             # logits tensor. This means any in-place operations on bonus_logits
             # won't affect the original logits tensor.
-            logger.info("Using vLLM Sampler")
+            # logger.info("Using vLLM Sampler")
             bonus_logits = model_output_tensor[
                 spec_decode_metadata.bonus_logits_indices.cpu()
             ]
