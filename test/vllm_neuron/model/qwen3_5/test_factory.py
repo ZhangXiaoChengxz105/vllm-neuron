@@ -119,3 +119,21 @@ def test_registry_routes_qwen3_5_to_the_factory(factory):
     # The registry key and the class name are the same, as in vLLM.
     assert dict(get_models())[factory.__name__] is factory
     assert issubclass(factory, Qwen3_5ForConditionalGeneration)
+
+
+@pytest.mark.parametrize("cache_dtype", ["auto", "bfloat16", "fp8"])
+def test_runner_policy_restricts_qwen_kv_cache_to_bf16(cache_dtype):
+    from vllm_neuron.vllm.model_runner_v2_policy import (
+        get_neuron_model_runner_v2_policy,
+    )
+
+    def unsupported(arch):
+        config = SimpleNamespace(
+            model_config=SimpleNamespace(architectures=[arch], runner_type="generate"),
+            cache_config=SimpleNamespace(cache_dtype=cache_dtype),
+        )
+        return get_neuron_model_runner_v2_policy(config).unsupported_features
+
+    reason = "non-BF16 KV cache on Qwen3.8"
+    assert (reason in unsupported("Qwen3_5ForCausalLM")) == (cache_dtype == "fp8")
+    assert reason not in unsupported("LlamaForCausalLM")

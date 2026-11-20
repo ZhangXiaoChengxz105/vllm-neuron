@@ -249,6 +249,8 @@ def get_neuron_model_runner_v2_policy(
         unsupported.append("reasoning configuration")
 
     if qwen35:
+        if getattr(cache_config, "cache_dtype", "auto") not in ("auto", "bfloat16"):
+            unsupported.append("non-BF16 KV cache on Qwen3.8")
         if getattr(cache_config, "enable_prefix_caching", False):
             unsupported.append("prefix caching on Qwen3.8")
         if getattr(cache_config, "mamba_cache_mode", None) not in (None, "none"):
